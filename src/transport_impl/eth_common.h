@@ -91,7 +91,7 @@ struct ipv4_hdr_t {
         << ", dst IP " << ipv4_to_string(dst_ip_) << "]";
     return ret.str();
   }
-} __attribute__((packed));
+} __attribute__((packed, aligned(2)));
 
 struct udp_hdr_t {
   uint16_t src_port_;

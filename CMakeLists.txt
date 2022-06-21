@@ -1,21 +1,27 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 project(eRPC)
 
 include(CMakeDependentOption)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# Options exposed to the user
+set(TRANSPORT "infiniband" CACHE STRING "Datapath transport (infiniband/raw/dpdk/fake)")
+option(ROCE "Use RoCE if TRANSPORT is infiniband" OFF)
+option(AZURE "Configure DPDK for Azure if TRANSPORT is dpdk" OFF)
+option(PERF "Compile for performance" ON)
+set(PGO "none" CACHE STRING "Profile-guided optimization (generate/use/none)")
+set(LOG_LEVEL "error" CACHE STRING "Logging level (none/error/warn/info/reorder/trace/cc)") 
 
 # Parse the build type
 if(PERF)
-  message(STATUS "Compilation optimized for performance.")
-  message(STATUS "Debugging is disabled.")
+  message(STATUS "eRPC: Compilation optimized for performance.")
+  message(STATUS "eRPC: Debugging is disabled.")
   set(CMAKE_BUILD_TYPE RelWithDebInfo)
   set(TESTING OFF)
 else(PERF)
-  message(STATUS "Compilation not optimized for performance.")
-  message(STATUS "Debugging is enabled. Perf will be low.")
+  message(STATUS "eRPC: Compilation not optimized for performance.")
+  message(STATUS "eRPC: Debugging is enabled. Perf will be low.")
   set(CMAKE_BUILD_TYPE Debug)
   SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
@@ -26,92 +32,84 @@ else(PERF)
 endif(PERF)
 
 # Common sub-projects: HdrHistogram
-set(HDR_HISTOGRAM_BUILD_PROGRAMS OFF CACHE BOOL "Minimize HDR histogram build")
-set(HDR_LOG_REQUIRED OFF CACHE BOOL "Disable HDR histogram's log to avoid zlib dependency")
-add_subdirectory(third_party/HdrHistogram_c)
+# set(HDR_HISTOGRAM_BUILD_PROGRAMS OFF CACHE BOOL "Minimize HDR histogram build")
+# set(HDR_LOG_REQUIRED OFF CACHE BOOL "Disable HDR histogram's log to avoid zlib dependency")
+# add_subdirectory(third_party/HdrHistogram_c)
 
 # Common sub-projects: gtest
 set(INSTALL_GTEST OFF)
-add_subdirectory(third_party/googletest)
-enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+# add_subdirectory(third_party/googletest)
+# enable_testing()
+# include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 # Common sub-projects: gflags
-add_subdirectory(third_party/gflags)
+# add_subdirectory(third_party/gflags)
 
 # Common sub-projects: asio
 include_directories(SYSTEM third_party/asio/include)
 
 # Add additional compilation flags only after adding subprojects
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -march=native -Wall -Wextra -Werror -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-conversion -Wold-style-cast -Wno-unused-function")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-nested-anon-types -Wno-keyword-macro -Wno-deprecated-declarations")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -march=native -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-conversion -Wold-style-cast -Wno-unused-function -Wno-unused-variable")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-nested-anon-types -Wno-keyword-macro -Wno-deprecated-declarations")
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
-include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/third_party)
+include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/third_party)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
 
 # DPDK may be needed for different reasons (e.g., the transport is DPDK, or
 # if the transport is not DPDK but the application needs DPDK libraries)
 set(DPDK_NEEDED "false")
 
-# Options exposed to the user
-set(TRANSPORT "dpdk" CACHE STRING "Datapath transport (infiniband/raw/dpdk/fake)")
-option(ROCE "Use RoCE if TRANSPORT is infiniband" OFF)
-option(AZURE "Configure DPDK for Azure if TRANSPORT is dpdk" OFF)
-option(PERF "Compile for performance" ON)
-set(PGO "none" CACHE STRING "Profile-guided optimization (generate/use/none)")
-set(LOG_LEVEL "warn" CACHE STRING "Logging level (none/error/warn/info/reorder/trace/cc)") 
-
 # Profile-guided optimization
 if(PGO STREQUAL "generate")
-  message(STATUS "Profile-guided optimization (generate mode) is enabled. Performance will be low.")
+  message(STATUS "eRPC: Profile-guided optimization (generate mode) is enabled. Performance will be low.")
   add_definitions(-fprofile-generate)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-generate")
 elseif(PGO STREQUAL "use")
-  message(STATUS "Profile-guided optimization (use mode) is enabled.")
+  message(STATUS "eRPC: Profile-guided optimization (use mode) is enabled.")
   add_definitions(-fprofile-use -fprofile-correction)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-use -fprofile-correction")
 elseif(PGO STREQUAL "none")
-  message(STATUS "Profile-guided optimization is disabled.")
+  message(STATUS "eRPC: Profile-guided optimization is disabled.")
 endif()
 
 # Logging level
 if(LOG_LEVEL STREQUAL "none")
-  message(STATUS "Logging level = none.")
+  message(STATUS "eRPC: Logging level = none.")
   add_definitions(-DERPC_LOG_LEVEL=0)
 elseif(LOG_LEVEL STREQUAL "error")
-  message(STATUS "Logging level = error.")
+  message(STATUS "eRPC: Logging level = error.")
   add_definitions(-DERPC_LOG_LEVEL=1)
 elseif(LOG_LEVEL STREQUAL "warn")
-  message(STATUS "Logging level = warn.")
+  message(STATUS "eRPC: Logging level = warn.")
   add_definitions(-DERPC_LOG_LEVEL=2)
 elseif(LOG_LEVEL STREQUAL "info")
-  message(STATUS "Logging level = info.")
+  message(STATUS "eRPC: Logging level = info.")
   add_definitions(-DERPC_LOG_LEVEL=3)
 elseif(LOG_LEVEL STREQUAL "reorder")
-  message(STATUS "Logging level = reorder. Warning: Performance will be low.")
+  message(STATUS "eRPC: Logging level = reorder. Warning: Performance will be low.")
   add_definitions(-DERPC_LOG_LEVEL=4)
 elseif(LOG_LEVEL STREQUAL "trace")
-  message(STATUS "Logging level = trace. Trace, on! Warning: Performance will be low.")
+  message(STATUS "eRPC: Logging level = trace. Trace, on! Warning: Performance will be low.")
   add_definitions(-DERPC_LOG_LEVEL=5)
 elseif(LOG_LEVEL STREQUAL "cc")
-  message(STATUS "Logging level = cc. Warning: Performance will be low.")
+  message(STATUS "eRPC: Logging level = cc. Warning: Performance will be low.")
   add_definitions(-DERPC_LOG_LEVEL=6)
 else()
-  message(STATUS "No logging level specified. Using warning level.")
+  message(STATUS "eRPC: No logging level specified. Using warning level.")
   add_definitions(-DERPC_LOG_LEVEL=2)
 endif()
 
 # Testing for packet loss, machine failure, etc
 if(TESTING)
-  message(STATUS "Testing is enabled. Performance will be low.")
+  message(STATUS "eRPC: Testing is enabled. Performance will be low.")
   add_definitions(-DERPC_TESTING=true)
 else(TESTING)
-  message(STATUS "Testing is disabled, so tests may fail.")
+  message(STATUS "eRPC: Testing is disabled, so tests may fail.")
   add_definitions(-DERPC_TESTING=false)
 endif(TESTING)
 
@@ -146,7 +144,6 @@ set(SOURCES
   src/transport_impl/raw/raw_transport_datapath.cc
   src/transport_impl/fake/fake_transport.cc
   src/util/huge_alloc.cc
-  src/util/numautils.cc
   src/util/tls_registry.cc)
 
 # Transport-specific. Mellanox OFED drivers are the best choice for raw and
@@ -154,7 +151,7 @@ set(SOURCES
 # transport. Other transports are exluded using preprocessor macros.
 string(TOUPPER ${TRANSPORT} DEFINE_TRANSPORT)
 add_definitions(-DERPC_${DEFINE_TRANSPORT}=true)
-message(STATUS "Selected transport = ${TRANSPORT}.")
+message(STATUS "eRPC: Selected transport = ${TRANSPORT}.")
 set(CONFIG_IS_ROCE false)
 
 if(TRANSPORT STREQUAL "dpdk")
@@ -164,16 +161,17 @@ if(TRANSPORT STREQUAL "dpdk")
 
   if(AZURE)
     set(CONFIG_IS_AZURE true)
-    message(STATUS "Configuring DPDK for Azure")
+    message(STATUS "eRPC: Configuring DPDK for Azure")
   else()
     set(CONFIG_IS_AZURE false)
-    message(STATUS "Configuring DPDK for bare-metal cluster (i.e., not Azure)")
+    message(STATUS "eRPC: Configuring DPDK for bare-metal cluster (i.e., not Azure)")
   endif()
 elseif(TRANSPORT STREQUAL "fake")
   set(CONFIG_IS_AZURE false)
   set(CONFIG_TRANSPORT "FakeTransport")
   set(CONFIG_HEADROOM 40)
 else()
+  # Here, the transport is either InfiniBand or Mellanox Raw Ethernet
   set(CONFIG_IS_AZURE false)
   find_library(IBVERBS_LIB ibverbs)
   if(NOT IBVERBS_LIB)
@@ -184,11 +182,6 @@ else()
   if(TRANSPORT STREQUAL "raw")
     set(CONFIG_TRANSPORT "RawTransport")
     set(CONFIG_HEADROOM 40)
-    message(FATAL_ERROR
-      "eRPC no longer supports Raw transport, please use DTRANSPORT=dpdk instead. "
-      "If you wish to use the Raw transport, please use this version: "
-      "https://github.com/erpc-io/eRPC/releases/tag/v0.1. You'll need to "
-      "install an old version of Mellanox OFED (4.4 or older).")
   elseif(TRANSPORT STREQUAL "fake")
     set(CONFIG_TRANSPORT "FakeTransport")
     set(CONFIG_HEADROOM 40)
@@ -205,22 +198,26 @@ else()
 endif()
 
 # Generate config.h
-configure_file(src/config.h.in src/config.h)
-include_directories(${CMAKE_BINARY_DIR}/src)
+# configure_file(src/config.h.in src/config.h)
+# include_directories(${PROJECT_BINARY_DIR}/src)
 
 # MICA sources
 set(MICA_SOURCES
   mica/src/mica/util/cityhash/city_mod.cc
   mica/src/mica/util/config.cc)
 
+# Compile the library
+message(STATUS "eRPC: Compile library.")
+add_library(erpc ${SOURCES})
+
 # The app to compile. Only one app is compiled to reduce compile time.
-if(EXISTS "${CMAKE_SOURCE_DIR}/scripts/autorun_app_file")
+if(EXISTS "${PROJECT_SOURCE_DIR}/scripts/autorun_app_file")
   file(STRINGS "scripts/autorun_app_file" APP)
 else()
-  message(STATUS "No autorun_app_file found. No application will be compiled.")
+  message(STATUS "eRPC: No autorun_app_file found. No application will be compiled.")
   return()
 endif()
-message(STATUS "Compiling app = " ${APP})
+message(STATUS "eRPC: Compiling app = " ${APP})
 
 # Add app-specific defines now, isolating them from the library and tests
 
@@ -228,28 +225,23 @@ message(STATUS "Compiling app = " ${APP})
 # not present, don't link it in.
 find_library(PMEM_LIB pmem)
 if(NOT PMEM_LIB)
-  message(STATUS "Persistent memory library (libpmem) not found")
+  message(STATUS "eRPC: Persistent memory library (libpmem) not found")
   set(PMEM "")
 else()
   set(PMEM "pmem")
 endif()
 
 if(APP STREQUAL "smr")
+  # Raft library from willemt/raft, installed at system-level
+  set(LIBRARIES ${LIBRARIES} raft ${PMEM})
+  # MICA
   include_directories(mica/src)
-  add_subdirectory(${CMAKE_SOURCE_DIR}/apps/smr/willemt_raft)
-  include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/apps/smr/willemt_raft/include)
-  if (WIN32)
-    link_directories(${CMAKE_SOURCE_DIR}/build)
-    set(LIBRARIES ${LIBRARIES} raft.lib)
-  else()
-    link_directories(${CMAKE_SOURCE_DIR}/apps/smr/willemt_raft)
-    set(LIBRARIES ${LIBRARIES} raft ${PMEM})
-  endif()
+  set(APP_ADDITIONAL_SOURCES ${MICA_SOURCES})
 elseif(APP STREQUAL "masstree_analytics")
   # CMake-based Masstree library from anujkaliaiitd/masstree-beta
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/masstree-beta)
-  include_directories(SYSTEM ${CMAKE_SOURCE_DIR}/third_party/masstree-beta)
-  add_definitions(-include ${CMAKE_SOURCE_DIR}/third_party/masstree-beta/config.h)
+  link_directories(${PROJECT_SOURCE_DIR}/third_party/masstree-beta)
+  include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/third_party/masstree-beta)
+  add_definitions(-include ${PROJECT_SOURCE_DIR}/third_party/masstree-beta/config.h)
   set(APP_ADDITIONAL_SOURCES
     apps/masstree_analytics/mt_index_api.cc
     mica/src/mica/util/cityhash/city_mod.cc)
@@ -260,7 +252,7 @@ elseif(APP STREQUAL "mica_test")
   set(APP_ADDITIONAL_SOURCES ${MICA_SOURCES})
 elseif(APP STREQUAL "pmem_bw")
   set(LIBRARIES ${LIBRARIES} ${PMEM})
-  message(STATUS "DPDK is needed for pmem_bw application")
+  message(STATUS "eRPC: DPDK is needed for pmem_bw application")
   add_definitions(-fpermissive)
   set(DPDK_NEEDED "true")
 elseif(APP STREQUAL "persistent_kv")
@@ -270,10 +262,10 @@ elseif(APP STREQUAL "log")
 endif()
 
 if(DPDK_NEEDED STREQUAL "true")
-  message(STATUS "DPDK needed to build eRPC")
+  message(STATUS "eRPC: DPDK needed to build eRPC")
 
   if (WIN32)
-    message(STATUS "DPDK for Windows")
+    message(STATUS "eRPC: DPDK for Windows")
 
     # Set this to your DPDK directory
     set(DPDK_WINDIR "${CMAKE_CURRENT_SOURCE_DIR}/../dpdk")
@@ -301,7 +293,7 @@ if(DPDK_NEEDED STREQUAL "true")
     link_directories("${DPDK_WINDIR}/build/lib")
     link_directories("${DPDK_WINDIR}/build/drivers")
 
-    set(LIBRARIES ${LIBRARIES}
+    set(LIBRARIES
       "-Wl,/WHOLEARCHIVE:${DPDK_WINDIR}/build/lib/librte_cfgfile.a"
       "-Wl,/WHOLEARCHIVE:${DPDK_WINDIR}/build/lib/librte_hash.a"
       "-Wl,/WHOLEARCHIVE:${DPDK_WINDIR}/build/lib/librte_cmdline.a"
@@ -331,7 +323,7 @@ if(DPDK_NEEDED STREQUAL "true")
       "-lshell32" "-lole32" "-loleaut32" "-luuid" "-lcomdlg32" "-liphlpapi")
 
   else(WIN32)
-    message(STATUS "DPDK for Linux")
+    message(STATUS "eRPC: DPDK for Linux")
     find_library(DPDK_LIB dpdk)
     if(NOT DPDK_LIB)
       message(FATAL_ERROR "DPDK library not found")
@@ -344,23 +336,20 @@ if(DPDK_NEEDED STREQUAL "true")
     # from the real DPDK include directory (/usr/include/dpdk/).
     find_path(DPDK_INCLUDE_DIR NAMES rte_ethdev.h PATH_SUFFIXES dpdk)
     if (DPDK_INCLUDE_DIR)
-      message(STATUS "DPDK include directory = ${DPDK_INCLUDE_DIR}")
+      message(STATUS "eRPC: DPDK include directory = ${DPDK_INCLUDE_DIR}")
     else()
       message(FATAL_ERROR "DPDK include directory not found")
     endif()
     include_directories(SYSTEM ${DPDK_INCLUDE_DIR})
   endif(WIN32)
 else()
-  message(STATUS "DPDK not needed to build eRPC")
+  message(STATUS "eRPC: DPDK not needed to build eRPC")
 endif()
 
 set(LIBRARIES ${LIBRARIES} gflags hdr_histogram_static)
 if(NOT WIN32)
   set(LIBRARIES ${LIBRARIES} rt numa pthread)
 endif()
-
-# Compile the library
-add_library(erpc ${SOURCES})
 
 if(DPDK_NEEDED STREQUAL "true")
   if (NOT WIN32)
@@ -376,18 +365,17 @@ endif()
 # Using link-time optimization sometimes requires building with sources instead
 # of liberpc. See the hello world example's Makefile for an example of
 # compiling with liberpc.
-add_executable(${APP} apps/${APP}/${APP}.cc ${APP_ADDITIONAL_SOURCES} ${SOURCES})
-
-if(PERF)
-  target_compile_options(${APP} PRIVATE "-flto")
-endif()
-target_link_libraries(${APP} ${LIBRARIES})
+# add_executable(${APP} apps/${APP}/${APP}.cc ${APP_ADDITIONAL_SOURCES} ${SOURCES})
+# if(PERF)
+#   target_compile_options(${APP} PRIVATE "-flto")
+# endif()
+# target_link_libraries(${APP} ${LIBRARIES})
 
 # Compile hello_world apps
-add_executable(hello_server hello_world/server.cc)
-target_link_libraries(hello_server erpc ${LIBRARIES})
-add_executable(hello_client hello_world/client.cc)
-target_link_libraries(hello_client erpc ${LIBRARIES})
+# add_executable(hello_server hello_world/server.cc)
+# target_link_libraries(hello_server erpc ${LIBRARIES})
+# add_executable(hello_client hello_world/client.cc)
+# target_link_libraries(hello_client erpc ${LIBRARIES})
 
 # Compile the tests
 if(TESTING)
@@ -459,9 +447,7 @@ if(TESTING)
     fixed_vector_test
     timely_test
     numautil_test
-    hdr_histogram_test
-    udp_client_test
-    udp_server_test)
+    hdr_histogram_test)
 
   # Non-Windows tests
   if (NOT WIN32)
