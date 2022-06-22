@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common.h"
-#include "util/timer.h"
+#include "../common.h"
+#include "../util/timer.h"
 
 namespace erpc {
 

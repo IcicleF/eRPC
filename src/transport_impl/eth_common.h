@@ -17,7 +17,7 @@
 #include <string.h>
 #include <sstream>
 #include <string>
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

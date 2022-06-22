@@ -2,7 +2,7 @@
  * @file rpc_sm_helpers.cc
  * @brief Session management helper methods
  */
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

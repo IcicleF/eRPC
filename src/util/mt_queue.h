@@ -4,7 +4,7 @@
 #include <mutex>
 #include <queue>
 
-#include "util/barrier.h"
+#include "barrier.h"
 
 namespace erpc {
 

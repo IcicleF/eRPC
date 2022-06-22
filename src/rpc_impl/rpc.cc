@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

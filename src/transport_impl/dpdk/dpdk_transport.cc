@@ -5,8 +5,8 @@
 #include <set>
 #include <stdexcept>
 #include "dpdk_externs.h"
-#include "util/huge_alloc.h"
-#include "util/numautils.h"
+#include "../../util/huge_alloc.h"
+#include "../../util/numautils.h"
 
 namespace erpc {
 

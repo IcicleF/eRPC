@@ -2,7 +2,7 @@
  * @file rpc_reset_handlers.cc
  * @brief Handlers for session resets
  */
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

@@ -8,10 +8,10 @@
 #pragma once
 
 #include <iomanip>
-#include "cc/timely_sweep_params.h"
-#include "common.h"
-#include "util/latency.h"
-#include "util/timer.h"
+#include "timely_sweep_params.h"
+#include "../common.h"
+#include "../util/latency.h"
+#include "../util/timer.h"
 
 namespace erpc {
 struct timely_record_t {

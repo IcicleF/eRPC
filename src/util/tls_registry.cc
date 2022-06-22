@@ -1,5 +1,5 @@
 #include "tls_registry.h"
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

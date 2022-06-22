@@ -12,7 +12,7 @@
 
 #include <atomic>
 #include <set>
-#include "common.h"
+#include "../../common.h"
 
 namespace erpc {
 

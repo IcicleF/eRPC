@@ -2,7 +2,7 @@
  * @file rpc_pkt_loss.cc
  * @brief Packet loss handling functions
  */
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

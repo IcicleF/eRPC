@@ -1,6 +1,6 @@
-#include "nexus.h"
-#include "util/udp_client.h"
-#include "util/udp_server.h"
+#include "../nexus.h"
+#include "../util/udp_client.h"
+#include "../util/udp_server.h"
 
 namespace erpc {
 

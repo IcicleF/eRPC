@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <chrono>
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

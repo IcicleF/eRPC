@@ -10,7 +10,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unordered_map>
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

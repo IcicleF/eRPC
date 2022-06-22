@@ -1,4 +1,4 @@
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

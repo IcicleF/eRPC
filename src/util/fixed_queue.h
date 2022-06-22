@@ -2,7 +2,7 @@
 
 #include <assert.h>
 #include <queue>
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

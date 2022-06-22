@@ -7,7 +7,7 @@
 
 #ifdef ERPC_FAKE
 
-#include "transport.h"
+#include "../../transport.h"
 
 namespace erpc {
 

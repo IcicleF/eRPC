@@ -7,8 +7,8 @@
 #ifdef ERPC_DPDK
 
 #include <rte_ethdev.h>
-#include "common.h"
-#include "util/logger.h"
+#include "../../common.h"
+#include "../../util/logger.h"
 
 namespace erpc {
 

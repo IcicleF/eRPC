@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include "common.h"
-#include "transport.h"
-#include "util/buffer.h"
-#include "util/rand.h"
+#include "../common.h"
+#include "../transport.h"
+#include "buffer.h"
+#include "rand.h"
 
 namespace erpc {
 

@@ -3,9 +3,9 @@
  * @brief Rpc session functions that are exposed to the user.
  */
 #include <algorithm>
-#include "util/autorun_helpers.h"
+#include "../util/autorun_helpers.h"
 
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 #include "ib_transport.h"
-#include "util/huge_alloc.h"
+#include "../../util/huge_alloc.h"
 
 namespace erpc {
 

@@ -2,7 +2,7 @@
  * @file rpc_connect_handlers.cc
  * @brief Handlers for session management connect requests and responses.
  */
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

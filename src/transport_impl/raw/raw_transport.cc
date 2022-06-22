@@ -5,7 +5,7 @@
 
 #include "interface_addrs.h"
 #include "raw_transport.h"
-#include "util/huge_alloc.h"
+#include "../../util/huge_alloc.h"
 
 namespace erpc {
 

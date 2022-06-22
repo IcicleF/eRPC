@@ -7,11 +7,11 @@
 #ifdef ERPC_RAW
 
 #include "mlx5_defs.h"
-#include "transport.h"
-#include "transport_impl/eth_common.h"
-#include "transport_impl/verbs_common.h"
-#include "util/barrier.h"
-#include "util/logger.h"
+#include "../../transport.h"
+#include "../eth_common.h"
+#include "../verbs_common.h"
+#include "../../util/barrier.h"
+#include "../../util/logger.h"
 
 namespace erpc {
 

@@ -6,9 +6,9 @@
 
 #ifdef ERPC_INFINIBAND
 
-#include "transport.h"
-#include "transport_impl/verbs_common.h"
-#include "util/logger.h"
+#include "../../transport.h"
+#include "../../util/logger.h"
+#include "../verbs_common.h"
 
 namespace erpc {
 
@@ -31,7 +31,7 @@ class IBTransport : public Transport {
 
   /// Ideally, the connection handshake should establish a secure queue key.
   /// For now, anything outside 0xffff0000..0xffffffff (reserved by CX3) works.
-  static constexpr uint32_t kQKey = 0x0205; 
+  static constexpr uint32_t kQKey = 0x0205;
   static constexpr size_t kGRHBytes = 40;
 
   static_assert(kSQDepth >= 2 * kUnsigBatch, "");  // Queue capacity check

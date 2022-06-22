@@ -1,11 +1,11 @@
-#include "nexus.h"
+#include "../nexus.h"
 #include <algorithm>
-#include "common.h"
-#include "rpc.h"
-#include "transport_impl/eth_common.h"
-#include "util/autorun_helpers.h"
-#include "util/barrier.h"
-#include "util/numautils.h"
+#include "../common.h"
+#include "../rpc.h"
+#include "../transport_impl/eth_common.h"
+#include "../util/autorun_helpers.h"
+#include "../util/barrier.h"
+#include "../util/numautils.h"
 
 namespace erpc {
 

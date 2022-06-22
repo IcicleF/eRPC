@@ -6,10 +6,10 @@
 
 #ifdef ERPC_DPDK
 
-#include "transport.h"
-#include "transport_impl/eth_common.h"
-#include "util/barrier.h"
-#include "util/logger.h"
+#include "../../transport.h"
+#include "../eth_common.h"
+#include "../../util/barrier.h"
+#include "../../util/logger.h"
 
 #ifdef _WIN32
 #include <rte_windows.h>

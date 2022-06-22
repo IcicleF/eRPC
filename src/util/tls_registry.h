@@ -1,7 +1,7 @@
 #pragma once
 
 #include <atomic>
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

@@ -2,7 +2,7 @@
  * @file rpc_fault_inject.cc
  * @brief Functions to allow users to inject faults into eRPC
  */
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

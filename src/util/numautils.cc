@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <thread>
 #include <vector>
-#include "common.h"
-#include "util/logger.h"
+#include "../common.h"
+#include "logger.h"
 
 #ifdef __linux__
 #include <numa.h>

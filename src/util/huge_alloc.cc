@@ -1,6 +1,6 @@
 #include "huge_alloc.h"
 #include <iostream>
-#include "util/logger.h"
+#include "../util/logger.h"
 
 #ifdef __linux__
 #include <numaif.h>

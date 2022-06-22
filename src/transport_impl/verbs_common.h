@@ -9,8 +9,8 @@
 #include <dirent.h>
 #include <infiniband/verbs.h>
 #include <string>
-#include "transport.h"
-#include "util/logger.h"
+#include "../transport.h"
+#include "../util/logger.h"
 
 namespace erpc {
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common.h"
-#include "util/huge_alloc.h"
+#include "../common.h"
+#include "huge_alloc.h"
 
 namespace erpc {
 

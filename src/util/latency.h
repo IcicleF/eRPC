@@ -10,7 +10,7 @@
 #include <string.h>
 #include <algorithm>
 #include <cstdio>
-#include "common.h"
+#include "../common.h"
 
 namespace erpc {
 

@@ -2,7 +2,7 @@
  * @file rpc_disconnect_handlers.cc
  * @brief Handlers for session management disconnect requests and responses.
  */
-#include "rpc.h"
+#include "../rpc.h"
 
 namespace erpc {
 

@@ -13,7 +13,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <string>
-#include "common.h"
+#include "../common.h"
 #include "math_utils.h"
 
 namespace erpc {
