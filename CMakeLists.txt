@@ -1,3 +1,11 @@
+# MODIFICATION DECLARATION (subject to Apache 2.0 License)
+#
+# This file was MODIFIED by Jian Gao <icicle.flw@gmail.com>.
+# Modifications:
+# - removed app
+# - fix configurations to InfiniBand / optimized / no tests
+# - force liberpc.a generation
+
 cmake_minimum_required(VERSION 3.10)
 project(eRPC)
 
@@ -144,7 +152,8 @@ set(SOURCES
   src/transport_impl/raw/raw_transport_datapath.cc
   src/transport_impl/fake/fake_transport.cc
   src/util/huge_alloc.cc
-  src/util/tls_registry.cc)
+  src/util/tls_registry.cc
+  src/util/numautils.cc)
 
 # Transport-specific. Mellanox OFED drivers are the best choice for raw and
 # infiniband, but they do not play well with DPDK. So we compile only one
